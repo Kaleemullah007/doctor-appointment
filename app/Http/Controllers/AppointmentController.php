@@ -42,19 +42,22 @@ class AppointmentController extends Controller
      */
     public function store(StoreAppointmentRequest $request)
     {
+        DB::beginTransaction();
 
         try {
-
-
-
                $appointment =  Appointment::create($request->validated());
-                $appointments = Appointment::paginate(5);
+                $appointments = Appointment::latest('appointments.created_at')
+                    ->select('appointments.*')
+                    ->addSelect('users.name as uname')
+                    ->paginate(5);
                 $html =  view('load-appointment',compact('appointments'))->render();
+            DB::commit();
                 return response()->json(array('error'=>true,'message'=>'Successfully done appointment and Appointment id is '.$appointment->id,'appointment_id'=>$appointment->id,'html'=>$html));
 
         }
         catch (\Exception $e){
-            return response()->json(array('error'=>false,'message'=>'Slot time already taken from an other patient'));
+            DB::rollback();
+            return response()->json(array('error'=>false,'message'=>'Try Again, Please'));
         }
 
     }

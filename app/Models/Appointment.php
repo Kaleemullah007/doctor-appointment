@@ -15,13 +15,17 @@ class Appointment extends Model
 
     protected $fillable = ['name','date','time','user_id','doctor_id'];
 
-    public function getTimeAttribute($value){
-
-        return Carbon::parse($value)
-            ->format('H:i');
-    }
+//    public function getTimeAttribute($value){
+//
+//        return Carbon::parse($value)
+//            ->format('H:i');
+//    }
     public function userDetalil(){
         return $this->belongsTo('App\Models\User','user_id','id');
+    }
+
+    public function doctor(){
+        return $this->belongsTo('App\Models\User','doctor_id','id');
     }
 
 

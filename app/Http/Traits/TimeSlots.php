@@ -31,15 +31,15 @@ trait  TimeSlots{
             $allTimeSlots = array();
         }
         $booked_appointments = Appointment::withoutGlobalScopes()
-            ->with('userDetalil')
             ->whereDate('date', $curentDate)
-            ->where('doctor_id' , $doctor_id)->get()->map(function($row){
-                return Carbon::parse($row->time)->setTimezone($row->userDetalil->timezone)
+            ->where('doctor_id' , $doctor_id)
+            ->get()->map(function($row){
+                return Carbon::parse($row->time)->setTimezone(auth()->user()->timezone)
                     ->format('H:i');
             })->toArray();
 
             $availableTimeSlots = array_diff($allTimeSlots, $booked_appointments);
-            // dd($availableTimeSlots,$allTimeSlots, $booked_appointments);
+//             dd($availableTimeSlots,$allTimeSlots, $booked_appointments);
 
         return $availableTimeSlots;
 }

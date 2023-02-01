@@ -29,6 +29,7 @@
                 <div class="col-md-4">
                     <div class="card">
                         @if($doctors->count()>0 && auth()->user()->role=='patient')
+                            <label>Doctors</label>
                             <select name="doctor_id" id="doctor_id" onchange="getTimeSlotList(this.value)">
 
                                 @foreach($doctors as $doctor)
@@ -40,6 +41,21 @@
                         @else
                             <selcet name="doctor_id" id="doctor_id"></selcet>
                         @endif
+
+
+                            @if($users != null  && auth()->user()->role=='doctor')
+                                <label>Users</label>
+                                <select name="user_id" id="user_id" >
+
+                                    @foreach($users as $user)
+                                        <option value="{{$user->id}}">{{$user->name}}</option>
+                                    @endforeach
+
+                                </select>
+                                <br>
+                            @else
+                                <selcet name="user_id" id="user_id"></selcet>
+                            @endif
 
                         <div class="card-header">{{ __('Time Slots') }}</div>
 
@@ -62,9 +78,10 @@
         var confirmation = window.confirm("Do you want to Get Appointment");
         if(confirmation === true) {
             var doctor_id = document.getElementById("doctor_id").value;
+            var user_id = document.getElementById("user_id").value;
             date = time;
             console.log(time + '--' + doctor_id)
-            axios.post('{{route("appointment.store")}}', {date: date, doctor_id: doctor_id})
+            axios.post('{{route("appointment.store")}}', {date: date, doctor_id: doctor_id,user_id:user_id})
                 .then((response) => {
                     console.log(response);
                     toastr.options.timeOut = 10000;

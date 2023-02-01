@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BusinessHour;
 use App\Providers\RouteServiceProvider;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -75,13 +76,20 @@ class RegisterController extends Controller
             'password' => Hash::make($data['password']),
         ]);
 
-        $days = array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
-        foreach($days as $day)
-        {
-            BusinessHour::factory(1)->create([
-                'day' => $day,
-                'user_id' => $user->id
-            ]);
+        if($data['role'] == 'doctor') {
+            $days = array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
+            $covnertedTimeFrom = Carbon::parse('9:00:00', $user->timezone)
+                ->setTimezone('UTC')->format('H:i:s');
+            $covnertedTimeTo = Carbon::parse('15:00:00', $user->timezone)
+                ->setTimezone('UTC')->format('H:i:s');
+            foreach ($days as $day) {
+                BusinessHour::factory(1)->create([
+                    'day' => $day,
+                    'user_id' => $user->id,
+                    'from' => $covnertedTimeFrom,
+                    'to' => $covnertedTimeTo
+                ]);
+            }
         }
         return $user;
 

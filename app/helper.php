@@ -8,6 +8,13 @@ if (! function_exists('convertDateTimeToUserTimeZone')) {
             ->setTimezone($timezone)->format($format);
     }
 }
+
+if (! function_exists('convertDateTimeToUserWithoutTimeZone')) {
+    function convertDateTimeToUserWithoutTimeZone($timezone,$datetime,$format) {
+        return Carbon::parse($datetime)->format($format);
+    }
+}
+
 if (! function_exists('convertDateTimeToUserTimeZoneUTC')) {
     function convertDateTimeToUserTimeZoneUTC($datetime,$format) {
         return Carbon::parse($datetime)
