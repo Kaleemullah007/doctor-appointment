@@ -19,10 +19,14 @@ trait FilterByUser{
             }
 
             if ($role == 'doctor') {
-                $builder->where('doctor_id', auth()->id());
+                $builder->
+                join('users','appointments.user_id','=','users.id')
+                ->where('doctor_id', auth()->id());
             }
             else if ($role == 'patient'){
-                $builder->where('user_id', auth()->id());
+                $builder
+                     ->join('users','appointments.doctor_id','=','users.id')
+                     ->where('user_id', auth()->id());
             }
             else if ($role == 'admin'){
                 // It'll show all record

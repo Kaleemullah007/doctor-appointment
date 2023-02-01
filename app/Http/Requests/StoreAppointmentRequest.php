@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -46,17 +47,36 @@ class StoreAppointmentRequest extends FormRequest
 
     protected function prepareForValidation()
     {
+        $timezone = '';
+        $doctor_id= null;
         if(auth()->user()->role == 'doctor'){
             $doctor_id = auth()->user()->id;
+            $user = $this->user_id;
+            $userDetails  = User::find($user);
+            $timezone = $userDetails->timezone;
+            $dtimezone = auth()->user()->timezone;
+
         }
         else{
-            $doctor_id = $this->doctor_id;
+
+            $doctorDetails  = User::find($this->doctor_id);
+
+            $dtimezone = $doctorDetails->timezone;
+            $timezone = auth()->user()->timezone;
+            $doctor_id = $doctorDetails->id;
+            $user =auth()->user()->id;
         }
 
-        $covnertedTime = Carbon::parse($this->date)
+        $covnertedTime = $this->date;
+        if(auth()->user()->role != 'doctor')
+        $covnertedTime = Carbon::parse($this->date,$timezone)
             ->setTimezone('UTC')->format('H:i:s');
+        else{
+            $covnertedTime = Carbon::parse($this->date,$timezone)->format('H:i:s');
+        }
+
         $this->merge([
-            'user_id'=>auth()->id(),
+            'user_id'=>$user,
             'name'=>auth()->user()->name,
             'doctor_id'=>$doctor_id,
             'date'=>date('Y-m-d'),

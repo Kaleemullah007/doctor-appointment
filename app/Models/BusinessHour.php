@@ -22,6 +22,7 @@ class BusinessHour extends Model
         else{
             $timezone = auth()->user()->timezone;
         }
+//        dd($timezone);
         $from = convertDateTimeToUserTimeZone($timezone,$this->from,'H:i:s');
         $to = convertDateTimeToUserTimeZone($timezone,$this->to,'H:i:s');
         $times = CarbonInterval::minutes($this->step)->toPeriod($from,$to)->toArray();
